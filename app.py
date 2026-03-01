@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import streamlit as st
 import pickle
 import re
@@ -69,10 +70,23 @@ if st.button("Predict"):
         # -----------------------------
         # Purchase Probability (Always Class 1 Probability)
         # -----------------------------
-        st.subheader("🛒 Purchase Probability")
+        st.subheader("🛒 Purchase Probability Distribution")
 
-        st.progress(float(purchase_probability))
-        st.write(f"Probability customer will purchase again: {purchase_probability*100:.2f}%")
+        purchase = purchase_probability
+        not_purchase = 1 - purchase_probability
+
+        fig, ax = plt.subplots()
+
+        ax.pie(
+            [purchase, not_purchase],
+            labels=["Purchase", "Not Purchase"],
+            autopct="%1.1f%%",
+            colors=["#4CAF50", "#F44336"],
+            startangle=90
+        )
+
+        ax.axis("equal")
+        st.pyplot(fig)
 
         # -----------------------------
         # BUSINESS TRUST SEGMENT
