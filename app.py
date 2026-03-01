@@ -93,9 +93,9 @@ if st.button("Predict"):
         cluster = kmeans_model.predict(vectorized)[0]
 
         segment_profiles = {
-            0: "High-rating dominant segment",
-            1: "Strong positive sentiment cluster",
-            2: "Mixed or relatively lower rating cluster"
+            0: "Cluster based on specific vocabulary patterns",
+            1: "Cluster representing common review expressions",
+            2: "Cluster representing alternate textual style patterns"
         }
 
         st.subheader("🔍 Sentiment Segmentation")
