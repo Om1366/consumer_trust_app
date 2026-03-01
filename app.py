@@ -51,7 +51,6 @@ if st.button("Predict"):
             st.progress(float(probability))
         else:
             st.progress(float(1 - probability))
-        st.progress(float(probability))
 
         if prediction == 1:
             st.info("Business Insight: Customer shows high trust. Suitable for premium targeting.")
