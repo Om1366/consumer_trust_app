@@ -34,7 +34,7 @@ def clean_text(text):
 # -----------------------------
 st.title("🍽 Consumer Trust & Purchase Likelihood Predictor")
 
-st.write("Enter a food product review to analyze purchase probability and sentiment segmentation.")
+st.write("Enter a food product review to analyze purchase probability and segmentation insights.")
 
 review_input = st.text_area("Enter Review Here:")
 
@@ -57,18 +57,17 @@ if st.button("Predict"):
 
         st.subheader("📊 Purchase Prediction Result")
 
-        # Model Confidence (classification certainty)
         if prediction == 1:
             confidence = purchase_probability
-            st.success(f"Likely to Purchase Again")
+            st.success("Likely to Purchase Again")
         else:
             confidence = 1 - purchase_probability
-            st.error(f"Unlikely to Purchase Again")
+            st.error("Unlikely to Purchase Again")
 
         st.write(f"Model Confidence: {confidence*100:.2f}%")
 
         # -----------------------------
-        # Purchase Probability (Human Friendly)
+        # Purchase Probability (Always Class 1 Probability)
         # -----------------------------
         st.subheader("🛒 Purchase Probability")
 
@@ -76,19 +75,25 @@ if st.button("Predict"):
         st.write(f"Probability customer will purchase again: {purchase_probability*100:.2f}%")
 
         # -----------------------------
-        # Business Insight
+        # BUSINESS TRUST SEGMENT
         # -----------------------------
-        st.subheader("💼 Business Insight")
+        st.subheader("💼 Trust Segment (Business Classification)")
 
         if purchase_probability > 0.75:
-            st.info("High trust customer. Suitable for premium targeting and loyalty programs.")
+            trust_segment = "High Trust Segment"
+            st.success(trust_segment)
+            st.info("Customer shows strong positive intent and high likelihood of repeat purchase.")
         elif purchase_probability > 0.40:
-            st.info("Moderate trust level. Opportunity for engagement and personalized offers.")
+            trust_segment = "Moderate Trust Segment"
+            st.warning(trust_segment)
+            st.info("Customer shows moderate intent. Opportunity for engagement strategies.")
         else:
-            st.info("Low trust level. Risk mitigation and service improvement recommended.")
+            trust_segment = "Low Trust Segment"
+            st.error(trust_segment)
+            st.info("Customer shows low trust. Risk mitigation and service improvement recommended.")
 
         # -----------------------------
-        # K-Means Sentiment Segmentation
+        # TECHNICAL K-MEANS SEGMENT
         # -----------------------------
         cluster = kmeans_model.predict(vectorized)[0]
 
@@ -98,9 +103,8 @@ if st.button("Predict"):
             2: "Cluster representing alternate textual style patterns"
         }
 
-        st.subheader("🔍 Sentiment Segmentation")
+        st.subheader("🔍 Text Pattern Cluster (K-Means)")
+        st.write(f"Cluster ID: {cluster}")
+        st.write(f"Cluster Profile: {segment_profiles.get(cluster, 'General review cluster')}")
 
-        st.write(f"Segment ID: {cluster}")
-        st.write(f"Segment Profile: {segment_profiles.get(cluster, 'General review cluster')}")
-
-        st.caption("Segmentation groups reviews based on textual similarity patterns using K-Means clustering.")
+        st.caption("K-Means clustering groups reviews based on textual similarity in TF-IDF feature space.")
