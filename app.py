@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import pickle
 import re
+import numpy as np
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 # -----------------------------
@@ -44,9 +45,6 @@ if st.button("Predict"):
     if review_input.strip() == "":
         st.warning("Please enter a review.")
     else:
-        # -----------------------------
-        # Preprocess & Vectorize
-        # -----------------------------
         cleaned = clean_text(review_input)
         vectorized = vectorizer.transform([cleaned])
 
@@ -68,16 +66,16 @@ if st.button("Predict"):
         st.write(f"Model Confidence: {confidence*100:.2f}%")
 
         # -----------------------------
-        # Purchase Probability (Always Class 1 Probability)
+        # Pie Chart
         # -----------------------------
         st.subheader("🛒 Purchase Probability Distribution")
 
         purchase = purchase_probability
         not_purchase = 1 - purchase_probability
 
-        fig, ax = plt.subplots()
+        fig1, ax1 = plt.subplots()
 
-        ax.pie(
+        ax1.pie(
             [purchase, not_purchase],
             labels=["Purchase", "Not Purchase"],
             autopct="%1.1f%%",
@@ -85,11 +83,24 @@ if st.button("Predict"):
             startangle=90
         )
 
-        ax.axis("equal")
-        st.pyplot(fig)
+        ax1.axis("equal")
+        st.pyplot(fig1)
 
         # -----------------------------
-        # BUSINESS TRUST SEGMENT
+        # Horizontal Probability Bar
+        # -----------------------------
+        st.subheader("📈 Purchase Probability Bar")
+
+        fig2, ax2 = plt.subplots()
+
+        ax2.barh(["Purchase Probability"], [purchase_probability], color="#4CAF50")
+        ax2.set_xlim(0, 1)
+        ax2.set_xlabel("Probability (0 to 1)")
+
+        st.pyplot(fig2)
+
+        # -----------------------------
+        # Business Trust Segment
         # -----------------------------
         st.subheader("💼 Trust Segment (Business Classification)")
 
@@ -107,7 +118,7 @@ if st.button("Predict"):
             st.info("Customer shows low trust. Risk mitigation and service improvement recommended.")
 
         # -----------------------------
-        # TECHNICAL K-MEANS SEGMENT
+        # K-Means Segmentation
         # -----------------------------
         cluster = kmeans_model.predict(vectorized)[0]
 
@@ -120,5 +131,26 @@ if st.button("Predict"):
         st.subheader("🔍 Text Pattern Cluster (K-Means)")
         st.write(f"Cluster ID: {cluster}")
         st.write(f"Cluster Profile: {segment_profiles.get(cluster, 'General review cluster')}")
+
+        # -----------------------------
+        # Cluster Visualization
+        # -----------------------------
+        st.subheader("📊 Cluster Comparison")
+
+        cluster_values = [0, 0, 0]
+        cluster_values[cluster] = 1  # highlight predicted cluster
+
+        fig3, ax3 = plt.subplots()
+
+        ax3.bar(["Cluster 0", "Cluster 1", "Cluster 2"],
+                cluster_values,
+                color=["#90CAF9", "#90CAF9", "#90CAF9"])
+
+        ax3.bar(cluster, 1, color="#1976D2")
+
+        ax3.set_ylim(0, 1)
+        ax3.set_ylabel("Cluster Assignment")
+
+        st.pyplot(fig3)
 
         st.caption("K-Means clustering groups reviews based on textual similarity in TF-IDF feature space.")
